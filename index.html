@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wayaro - Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#06080c] text-slate-200 font-['Plus_Jakarta_Sans']">
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-[#0b0e14] border-r border-slate-800 p-6 flex flex-col shrink-0">
+            <div class="flex items-center gap-3 mb-10">
+                <img src="LOGO CT.png" alt="Logo" class="w-10 h-10 rounded-lg">
+                <span class="text-sky-400 font-extrabold text-lg tracking-tighter italic uppercase">
+                    wayaro
+                </span>
+            </div>
+            <nav class="flex-1 space-y-2">
+                <div id="nav-dashboard" class="nav-item active" onclick="showSection('dashboard')"><span>📊</span> Dashboard</div>
+                <div id="nav-trailing" class="nav-item" onclick="showSection('trailing')"><span>📅</span> Registro de Operaciones</div>
+            </nav>
+            <div class="mt-auto pt-6 border-t border-slate-800/50">
+                <div class="text-[11px] text-slate-600 font-bold uppercase tracking-widest italic text-center mb-1">REGISTRO OPERATIVA 1.0.0</div>
+                <div class="text-[9px] text-sky-500/80 font-black uppercase tracking-[0.2em] text-center">Hecho por WAYARO</div>
+            </div>
+        </aside>
+
+        <main id="section-dashboard" class="flex-1 p-8 overflow-y-auto content-section">
+            <header class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight italic uppercase">Analisis de los Resultados</h1>
+                <div class="flex items-center gap-4">
+                    <button onclick="exportarExcel()" class="bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 text-[10px] font-bold py-2 px-4 rounded-lg border border-emerald-600/30 transition uppercase tracking-widest">Excel ⬇</button>
+                    <div class="bg-[#0b0e14] border border-slate-800 p-2 rounded-xl flex items-center gap-3">
+                        <span class="text-[9px] font-black text-slate-500 uppercase ml-2">CUENTA:</span>
+                        <select id="account-type-select" class="select-dark border-none bg-transparent" onchange="updateDashboard()">
+                            <option value="25000">25K Account</option>
+                            <option value="50000" selected>50K Account</option>
+                            <option value="100000">100K Account</option>
+                            <option value="150000">150K Account</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-5 gap-6 mb-8">
+                <div class="glass-card p-6"><span class="text-[10px] font-bold text-slate-500 uppercase">Balance Actual</span><h2 id="kpi-balance" class="text-3xl font-black text-white">$0</h2></div>
+                <div class="glass-card p-6"><span class="text-[10px] font-bold text-slate-500 uppercase">Min Balance (MLL)</span><h2 id="kpi-mll" class="text-3xl font-black text-white">$0</h2></div>
+                <div class="glass-card p-6"><span class="text-[10px] font-bold text-slate-500 uppercase">Total P&L</span><h2 id="kpi-pnl" class="text-3xl font-black">$0</h2></div>
+                <div class="glass-card p-6"><span class="text-[10px] font-bold text-slate-500 uppercase">Días</span><h2 id="kpi-days" class="text-3xl font-black text-white">0</h2></div>
+                <div class="glass-card p-6 flex flex-col items-center justify-center">
+                    <div class="relative w-16 h-16 flex items-center justify-center">
+                        <svg class="w-full h-full rotate-[-90deg]"><circle cx="32" cy="32" r="28" stroke="#1e293b" stroke-width="6" fill="transparent"/><circle id="dial-winrate-circle" cx="32" cy="32" r="28" stroke="#22d3ee" stroke-width="6" fill="transparent" stroke-dasharray="175.9" stroke-dashoffset="175.9" stroke-linecap="round"/></svg>
+                        <span id="dial-winrate-text" class="absolute text-xs font-black text-white">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 mb-8 h-80"><canvas id="balanceChart"></canvas></div>
+
+            <div class="glass-card p-8">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="target-mll-label" class="text-[10px] font-bold text-red-500 uppercase tracking-widest">$0 MLL</span>
+                    <span id="target-profit-label" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">$0 TARGET</span>
+                </div>
+                <div class="progress-container mb-8"><div id="target-progress-bar" class="progress-bar-fill"></div></div>
+                <div class="grid grid-cols-3 gap-8 text-center">
+                    <div><h3 id="stat-drawdown" class="text-2xl font-black text-white">$0</h3><p class="text-[10px] font-bold text-slate-500 uppercase mt-1 tracking-widest">Drawdown Restante</p></div>
+                    <div><h3 id="stat-balance" class="text-2xl font-black text-white">$0</h3><p class="text-[10px] font-bold text-slate-500 uppercase mt-1 tracking-widest">Balance de Cuenta</p></div>
+                    <div><h3 id="stat-remaining" class="text-2xl font-black text-emerald-400">$0</h3><p class="text-[10px] font-bold text-slate-500 uppercase mt-1 tracking-widest">Para la Meta</p></div>
+                </div>
+            </div>
+        </main>
+
+        <main id="section-trailing" class="flex-1 p-8 overflow-y-auto hidden content-section">
+            <header class="flex justify-between items-end mb-8">
+                <h1 class="text-3xl font-extrabold text-white tracking-tight italic uppercase">Bitácora</h1>
+                <div class="flex gap-3">
+                    <select id="month-select" class="select-dark w-40" onchange="renderCalendar()"></select>
+                    <select id="year-select" class="select-dark w-28" onchange="renderCalendar()"></select>
+                    <button onclick="irAHoy()" class="bg-slate-800 px-6 py-2 rounded-lg text-xs font-bold border border-slate-700 uppercase">Hoy</button>
+                </div>
+            </header>
+            <div class="glass-card p-6 overflow-x-auto">
+                <div class="grid grid-cols-8 gap-4 text-center text-[10px] uppercase font-bold text-slate-500 mb-4 tracking-widest">
+                    <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div class="text-cyan-400">Total Sem.</div>
+                </div>
+                <div id="calendar-body" class="grid grid-cols-8 gap-4"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-editor" class="modal-overlay hidden">
+        <div class="modal-content glass-card p-8 w-[500px]">
+            <h2 class="text-2xl font-bold text-white mb-6 uppercase italic">Detalles de Sesión</h2>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="input-group">
+                    <label>Símbolo</label>
+                    <select id="trade-simbolo" class="input-dark">
+                        <option value="NQ">NQ</option>
+                        <option value="MNQ">MNQ</option>
+                        <option value="ES">ES</option>
+                        <option value="MES">MES</option>
+                        <option value="GC">GC (Gold)</option>
+                        <option value="MGC">MGC (Micro Gold)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Dirección</label>
+                    <select id="trade-direccion" class="input-dark">
+                        <option value="Compra">Compra (L)</option>
+                        <option value="Venta">Venta (S)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>P&L Final ($)</label>
+                    <input type="number" id="trade-pnl" class="input-dark" placeholder="Ej: 500">
+                </div>
+                <div class="input-group">
+                    <label>Resultado</label>
+                    <select id="trade-estado" class="input-dark">
+                        <option value="TP">TP ✅</option>
+                        <option value="SL">SL ❌</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group mb-8">
+                <label>Notas / Psicología</label>
+                <textarea id="trade-notas" class="input-dark h-24 resize-none" placeholder="¿Cómo te sentiste hoy?"></textarea>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal()" class="flex-1 bg-slate-800 text-slate-400 font-bold py-3 rounded-xl uppercase text-[10px]">Cancelar</button>
+                <button onclick="eliminarDia()" class="flex-1 bg-red-900/20 text-red-500 font-bold py-3 rounded-xl border border-red-900/50 uppercase text-[10px]">Eliminar</button>
+                <button onclick="guardarCambios()" class="flex-[2] bg-cyan-500 text-black font-bold py-3 rounded-xl uppercase text-[10px]">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

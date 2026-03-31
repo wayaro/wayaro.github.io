@@ -1,0 +1,28 @@
+:root { --bg-dark: #06080c; --card-bg: #0b0e14; --accent: #22d3ee; --border: rgba(255, 255, 255, 0.08); }
+body { background: var(--bg-dark); color: #e2e8f0; overflow: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.glass-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 1.5rem; }
+
+.nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1rem; border-radius: 0.75rem; color: #64748b; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
+.nav-item.active { background: #1e293b; color: var(--accent); }
+
+/* Corrección visual para el menú desplegable */
+.select-dark, .input-dark { background: #161b22; color: white; border: 1px solid var(--border); padding: 0.6rem 1rem; border-radius: 0.75rem; font-size: 0.85rem; width: 100%; outline: none; }
+.select-dark option { background-color: #0b0e14; color: white; }
+
+.input-group label { display: block; font-size: 9px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 6px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+
+.progress-container { height: 10px; background: #161b22; border-radius: 99px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #22c55e); width: 0%; transition: 0.8s ease-out; }
+
+.calendar-day { aspect-ratio: 1/0.85; border: 1px solid var(--border); border-radius: 1rem; padding: 0.8rem; cursor: pointer; transition: 0.2s; position: relative; }
+.calendar-day:hover { border-color: var(--accent); background: rgba(255,255,255,0.02); }
+.total-week-card { background: linear-gradient(145deg, #0f172a, #0b0e14); border: 1px dashed var(--accent); border-radius: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+.day-number { font-size: 14px; font-weight: 800; color: #94a3b8; } 
+.trade-profit { font-size: 1.2rem; font-weight: 900; margin-top: 0.3rem; }
+.trade-info-container { margin-top: 0.5rem; display: flex; justify-content: center; gap: 0.6rem; font-size: 11px; font-weight: 800; }
+.info-tag { padding: 2px 6px; background: rgba(0,0,0,0.4); border-radius: 4px; text-transform: uppercase; }
+.day-tp { background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3); }
+.day-sl { background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.3); }
